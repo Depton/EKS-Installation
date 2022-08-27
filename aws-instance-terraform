@@ -1,0 +1,15 @@
+provider "aws" {
+  region     = "us-east-2"
+  access_key = "AKIAXIPD7R7WJ6G5NWUM"
+  secret_key = "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"
+}
+
+resource "aws_instance" "ec2instance" {
+  tags = {
+    Name = "terra2"
+  }
+  ami             = "ami-092b43193629811af"
+  instance_type   = "t2.micro"
+  key_name        = "testimony2022"
+  security_groups = ["default"]
+}
