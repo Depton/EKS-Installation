@@ -1,0 +1,68 @@
+.#create eks admin user:
+sudo adduser eksadmin
+
+.#add eks user to sudoers group:
+sudo echo "eksadmin  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/eksadmin
+sudo su - eksadmin
+
+.#Version update:
+git clone https://github.com/ikmode/eks-terraform-setup.git
+
+.#vi into terraform-install.sh and change version to .31:
+
+.#Install terraform:
+sh terraform-install.sh
+
+.#Install AWS CLI V2:
+sudo apt update -y
+sudo apt install curl unzip wget -y  
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+.#Create IAM Role With Required Policies:
+.#create an admin role on AWS:
+
+.#Attach IAM Role to EC2 Instance:
+
+.#Initialize terraform and verify .tf files:
+terraform init
+terraform validate
+terraform plan
+
+.#Install Kubectl:
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+.#Build cluster with Terraform:
+terraform apply --auto-approve
+
+.#Create the .kube/config files:
+mkdir .kube
+touch mkdir .kube/config
+
+.#Copy the token from the configmap. Copy correctly from apiVersion under:
+.#kubeconfig = till immediately after "terraform-eks-demo" dont pass the quotation marks:
+
+.#Create the config file:
+vim .kube/config
+
+.#Paste the token in the file and save it:
+
+.#get your cluster status:
+kubectl get nodes
+
+.#Confirmation error message that all is fine. Must be this message only please:
+.#If you get the message in the bracket below your installation is almos complete:
+.# (The connection to the server localhost:8080 was refused - did you specify the right host or port?) :
+
+.#Update the Kubeconfig file for the cluster. (Almost like kubeadm reset) :
+aws eks update-kubeconfig --region us-west-1 --name terraform-eks-demo
+
+.#get your cluster status. Your nodes should all be fine. :
+kubectl get nodes
+
+
+.#When you are done and what to delete the cluster :
+terrafrom destroy --auto-approve
